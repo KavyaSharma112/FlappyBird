@@ -27,6 +27,8 @@ function preload () {
 
 let bird;
 let hasLanded = false;
+let cursors;
+let hasBumped = false;
 
 
 function create () {
@@ -53,13 +55,39 @@ function create () {
     bird = this.physics.add.sprite(0, 50, 'bird').setScale(2);
     bird.setBounce(0.2);
     bird.setCollideWorldBounds(true);
+
+    this.physics.add.overlap(bird, road, () => (hasLanded =  true), null, this);
     this.physics.add.collider(bird, road);
 
-    this.physics.add.overlap(bird, road, () => hasLanded =  true, null, this);
-    this.physics.add.collider(bird, road);
-    
+    cursors = this.input.keyboard.createCursorKeys();
+
+    this.physics.add.overlap(bird, topColumns, () => hasBumped = true, null, this);
+    this.physics.add.overlap(bird, bottomColumns, () => hasBumped = true, null, this);
+    this.physics.add.collider(bird, topColumns);
+    this.physics.add.collider(bird, bottomColumns);
+
 }
 
-function update () {
+let isGameStarted = false;
 
+function update () {    
+
+    if(!isGameStarted){
+        bird.setVelocityY(-160);
+    }
+
+    if(cursors.space.isDown && !isGameStarted){
+        isGameStarted = true;
+    }
+
+    if(cursors.up.isDown && !hasLanded && !hasBumped) {
+        bird.setVelocityY(-160);
+    }
+
+    if(!hasLanded || !hasBumped) {
+        bird.body.velocity.x = 50;
+    }
+    if (hasLanded || hasBumped || !isGameStarted) {
+        bird.body.velocity.x = 0;
+    }
 }
