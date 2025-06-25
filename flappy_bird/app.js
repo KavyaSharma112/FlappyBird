@@ -29,9 +29,11 @@ let bird;
 let hasLanded = false;
 let cursors;
 let hasBumped = false;
+let messageToPlayer;
 
 
 function create () {
+
     const background = this.add.image(0, 0, 'background').setOrigin(0,0);
 
     const roads = this.physics.add.staticGroup();
@@ -66,6 +68,10 @@ function create () {
     this.physics.add.collider(bird, topColumns);
     this.physics.add.collider(bird, bottomColumns);
 
+    messageToPlayer = this.add.text(0, 0, 'Instructions: Press space bar to start', {fontFamily: '"Comic Sans MS", Times, serif', fontSize: "20px", color: "white", backgroundColor: "black"});
+
+  Phaser.Display.Align.In.BottomCenter(messageToPlayer, background, 0, 50);
+
 }
 
 let isGameStarted = false;
@@ -78,6 +84,7 @@ function update () {
 
     if(cursors.space.isDown && !isGameStarted){
         isGameStarted = true;
+        messageToPlayer.text = 'Instructions: Press the "^" button to stay upright\nAnd don\'t hit the column or ground or you will lose!';
     }
 
     if(cursors.up.isDown && !hasLanded && !hasBumped) {
@@ -87,7 +94,18 @@ function update () {
     if(!hasLanded || !hasBumped) {
         bird.body.velocity.x = 50;
     }
+
     if (hasLanded || hasBumped || !isGameStarted) {
         bird.body.velocity.x = 0;
     }
+
+    if(hasLanded || hasBumped){
+        messageToPlayer.text = 'Oh no! You crashed!';
+    }
+
+    if(bird.x > 750) {
+        bird.setVelocityY(40);
+        messageToPlayer.text = 'Congrats! You won!';
+    }
+    
 }
